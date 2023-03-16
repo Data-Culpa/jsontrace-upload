@@ -1,5 +1,5 @@
 # jsontrace-upload
-JSON Trace Upload lets you upload JSON snapshots to [JSON Trace](https://demo.jsontrace.com/)
+JSON Trace Upload lets you upload JSON snapshots to [JSON Trace](https://demo.jsontrace.com/) - a powerful visual JSON compare, diff, and analysis tool.
 
 
 ### Usage:
