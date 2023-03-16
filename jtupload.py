@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 #
 # jtupload.py
 # JSON Trace Upload Client 
@@ -262,9 +264,9 @@ class Upload:
             had_error = jr.get('had_error', False)
             if had_error:
                 FatalError(4, "Error from server: %s" % jr)
-                return False
+                return 
 
-            return True
+            return jr
         except requests.exceptions.Timeout:
             FatalError(4, "timed out trying to load csv file...")
 #        except requests.exceptions.RetryError:
@@ -274,6 +276,7 @@ class Upload:
             FatalError(4, "got an request error... server down?: %s" % e)
         except BaseException as e:
             FatalError(4, "got some other error: %s" % e)
+        return { "had_error": True }
 
     def do_ls(self, hash_name):
         get_url = f"{API_BASE_URL}/list/{hash_name}"
@@ -311,9 +314,15 @@ def do_first_load(name, file_name):
         if not os.path.exists(file_name):
             FatalError(2, "No file found at %s" % file_name)
 
-    print("TODO: upload data to %s" % name)
     up = Upload()
-    up.load_file("first", file_name, name)
+    jr = up.load_file("first", file_name, name)
+    if jr.get('had_error', False):
+        FatalError(5, "Error: %s" % jr)
+    bytes_sz = jr.get('bytes', 'unknown')
+    hash_id = jr.get('hash_id', 'unknown')
+    print("Server received %s bytes" % bytes_sz)
+    print(f"YOUR NEW diff set id is: {hash_id}")
+    print(f"VIEW: {API_BASE_URL}/view/{hash_id}")
     return
 
 def do_append(append_hash, name, file_name):
@@ -345,14 +354,12 @@ def main():
     if args.append:
         if args.ls:
             FatalError(1, "Cannot use --ls with --append")
-        print("append")
         do_append(args.append, args.name, args.file)
     elif args.ls:
         if args.name:
             FatalError(1, "Cannot use --name with --ls")
         do_ls(args.ls)
     else:
-        print("first load")
         do_first_load(args.name, args.file)
 
 
