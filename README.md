@@ -1,10 +1,10 @@
 # jsontrace-upload
-Upload CLI tool for JSON Trace
+JSON Trace Upload lets you upload JSON snapshots to [JSON Trace](https://demo.jsontrace.com/)
 
 
-## Usage:
+### Usage:
 
-You can pipe in JSON data to send to jsontrace.com:
+You can pipe in JSON data to send to [jsontrace.com](https://demo.jsontrace.com/):
 ```cat <json> | jtupload.py --name 'label for your use'```
 
 jtupload.py will print out:
