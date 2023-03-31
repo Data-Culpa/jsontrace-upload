@@ -249,16 +249,22 @@ class Upload:
         post_url = f"{API_BASE_URL}/{method}"
         headers = self._batch_headers(file_name, label, append_hash)
 
-        file_sz = os.stat(file_name).st_size
-        file_sz_mb = int(file_sz / (1024 * 1024 * 1024))
-        timeout = 10 + (2 * (1 + file_sz_mb))
         try:
-            with open(file_name, "rb") as the_file:
+            if file_name is None:
                 r = requests.post(url=post_url, 
-                                  files={file_name: the_file}, 
+                                  files={"stdin": sys.stdin}, 
                                   headers=headers,
-                                  timeout=timeout) # variable
-                #r.raise_for_status() # turn HTTP errors into exceptions -- 
+                                  timeout=120) # FIXME: not sure this is what we want.
+            else:
+                file_sz = os.stat(file_name).st_size
+                file_sz_mb = int(file_sz / (1024 * 1024 * 1024))
+                timeout = 10 + (2 * (1 + file_sz_mb))
+                with open(file_name, "rb") as the_file:
+                    r = requests.post(url=post_url, 
+                                      files={file_name: the_file}, 
+                                      headers=headers,
+                                      timeout=timeout) # variable
+                    #r.raise_for_status() # turn HTTP errors into exceptions -- 
 
             jr = self._parseJson(post_url, r.content)
             had_error = jr.get('had_error', False)
@@ -312,7 +318,7 @@ def do_first_load(name, file_name):
         FatalError(3, "reading from stdin is not yet supported -- put it in a file for now!")
     else:
         if not os.path.exists(file_name):
-            FatalError(2, "No file found at %s" % file_name)
+            FatalError(2, "No file found at local path %s" % file_name)
 
     up = Upload()
     jr = up.load_file("first", file_name, name)
@@ -326,11 +332,16 @@ def do_first_load(name, file_name):
     return
 
 def do_append(append_hash, name, file_name):
+    print("__%s__, __%s__, __%s__" % (append_hash, name, file_name))
     if name is None:
         WarningMessage("No --name; will auto-assign a name")
     if file_name is None:
-        WarningMessage("No file specified; will read from stdin")
-    print("TODO: append to %s" % append_hash)
+        WarningMessage("No --file specified; will read from stdin")
+    
+    # Make sure file exists if it is not None
+    if file_name is not None:
+        if not os.path.exists(file_name):
+            FatalError(2, "No file found at local path %s" % file_name)
     up = Upload()
     up.load_file("append", file_name, name, append_hash)
     return
@@ -347,18 +358,18 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--name",       help="Specify a name for this JSON document.")
     ap.add_argument("--append",     help="Append to the specified hash.")
-    ap.add_argument("--ls",         help="List the documents for a given hash.")
+    #ap.add_argument("--ls",         help="List the documents for a given hash.")
     ap.add_argument("--file",       help="File to append or upload.")
 
     args = ap.parse_args()
     if args.append:
-        if args.ls:
-            FatalError(1, "Cannot use --ls with --append")
+        #if args.ls:
+        #    FatalError(1, "Cannot use --ls with --append")
         do_append(args.append, args.name, args.file)
-    elif args.ls:
-        if args.name:
-            FatalError(1, "Cannot use --name with --ls")
-        do_ls(args.ls)
+    #elif args.ls:
+    #    if args.name:
+    #        FatalError(1, "Cannot use --name with --ls")
+    #    do_ls(args.ls)
     else:
         do_first_load(args.name, args.file)
 
