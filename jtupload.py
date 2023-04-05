@@ -41,7 +41,8 @@ import uuid
 #API_KEY    = os.environ.get('JSONTRACE_API_KEY')
 #API_SECRET = os.environ.get('JSONTRACE_SECRET')
 
-API_BASE_URL = os.environ.get('JSONTRACE_BASE_URL', "https://demo.jsontrace.com/v1/upload")
+API_BASE_URL = os.environ.get('JSONTRACE_BASE_URL', "https://demo.jsontrace.com")
+API_BASE_UPLOAD_URL = API_BASE_URL + "/v1/upload"
 
 class DataCulpaConnectionError(Exception):
     def __init__(self, url, message):
@@ -246,7 +247,7 @@ class Upload:
         return jr
 
     def load_file(self, method, file_name, label, append_hash=None):
-        post_url = f"{API_BASE_URL}/{method}"
+        post_url = f"{API_BASE_UPLOAD_URL}/{method}"
         headers = self._batch_headers(file_name, label, append_hash)
 
         try:
@@ -285,7 +286,7 @@ class Upload:
         return { "had_error": True }
 
     def do_ls(self, hash_name):
-        get_url = f"{API_BASE_URL}/list/{hash_name}"
+        get_url = f"{API_BASE_UPLOAD_URL}/list/{hash_name}"
         r = self.GET(get_url)
         jr = self._parseJson(get_url, r.content)
         return jr
@@ -332,7 +333,7 @@ def do_first_load(name, file_name):
     return
 
 def do_append(append_hash, name, file_name):
-    print("__%s__, __%s__, __%s__" % (append_hash, name, file_name))
+    #print("__%s__, __%s__, __%s__" % (append_hash, name, file_name))
     if name is None:
         WarningMessage("No --name; will auto-assign a name")
     if file_name is None:
@@ -344,6 +345,8 @@ def do_append(append_hash, name, file_name):
             FatalError(2, "No file found at local path %s" % file_name)
     up = Upload()
     up.load_file("append", file_name, name, append_hash)
+    print("View your bucket diff at %s/#view/%s" % (API_BASE_URL, append_hash))
+    
     return
 
 def do_ls(ls_name):
@@ -356,22 +359,24 @@ def do_ls(ls_name):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--name",       help="Specify a name for this JSON document.")
     ap.add_argument("--append",     help="Append to the specified hash.")
-    #ap.add_argument("--ls",         help="List the documents for a given hash.")
+    ap.add_argument("--label",       help="Specify a label for this JSON document")
     ap.add_argument("--file",       help="File to append or upload.")
+    #ap.add_argument("--ls",         help="List the documents for a given hash.")
 
     args = ap.parse_args()
     if args.append:
         #if args.ls:
         #    FatalError(1, "Cannot use --ls with --append")
-        do_append(args.append, args.name, args.file)
+        do_append(args.append, args.label, args.file)
+    else:
+        ap.print_help()
     #elif args.ls:
     #    if args.name:
     #        FatalError(1, "Cannot use --name with --ls")
     #    do_ls(args.ls)
-    else:
-        do_first_load(args.name, args.file)
+    #else:
+    #    do_first_load(args.name, args.file)
 
 
 if __name__ == "__main__":
