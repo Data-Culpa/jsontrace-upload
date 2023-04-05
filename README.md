@@ -4,7 +4,7 @@ JSON Trace Upload lets you upload JSON snapshots to [JSON Trace](https://demo.js
 
 ### Usage:
 
-1. Create a bucket in [JSON Trace](https://demo.jsontrace.com/#buckets) by clicking 'create new bucket' if you don't have one. If you already have an empty bucket or if you have too many buckets, you cannot create a new bucket.
+1. Create a bucket in the [JSON Trace CLI view](https://demo.jsontrace.com/#buckets) by clicking 'create new bucket' if you don't have one. If you already have an empty bucket or if you have too many buckets, you cannot create a new bucket.
 
 ![screenshot](https://raw.githubusercontent.com/Data-Culpa/jsontrace-upload/main/readme-images/jt-upload.png)
 
