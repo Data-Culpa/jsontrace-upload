@@ -22,7 +22,7 @@ Upon success, `jtupload.py` will print out:
 
 3. You can append to the "diff set" by appending a second (or a third, fourth, etc) file to the collection by running the above commands again on another JSON source.
 
-If you do not specify a --name, JSON Trace will assign a label for you (current time).
+If you do not specify a `--label`, JSON Trace will assign a label for you (the current time).
 
 You can upload to the same "diff set" from multiple hosts. For example, you can rapidly compare a JSON file or stream from your laptop to something in EC2 without moving files or copying and pasting. Anyone with the hash can append to the data set, so be careful who you share it with.
 
