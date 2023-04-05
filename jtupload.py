@@ -313,7 +313,7 @@ def WarningMessage(message):
 
 def do_first_load(name, file_name):
     if name is None:
-        WarningMessage("No --name; will auto-assign a name")
+        WarningMessage("No --label; will auto-assign a name")
     if file_name is None:
         WarningMessage("No file specified; will read from stdin")
         FatalError(3, "reading from stdin is not yet supported -- put it in a file for now!")
@@ -335,7 +335,7 @@ def do_first_load(name, file_name):
 def do_append(append_hash, name, file_name):
     #print("__%s__, __%s__, __%s__" % (append_hash, name, file_name))
     if name is None:
-        WarningMessage("No --name; will auto-assign a name")
+        WarningMessage("No --label; will auto-assign a name")
     if file_name is None:
         WarningMessage("No --file specified; will read from stdin")
     
@@ -345,7 +345,7 @@ def do_append(append_hash, name, file_name):
             FatalError(2, "No file found at local path %s" % file_name)
     up = Upload()
     up.load_file("append", file_name, name, append_hash)
-    print("View your bucket diff at %s/#view/%s" % (API_BASE_URL, append_hash))
+    print("View your bucket diff at %s/#bucket-%s" % (API_BASE_URL, append_hash))
     
     return
 
@@ -372,8 +372,8 @@ def main():
     else:
         ap.print_help()
     #elif args.ls:
-    #    if args.name:
-    #        FatalError(1, "Cannot use --name with --ls")
+    #    if args.label:
+    #        FatalError(1, "Cannot use --label with --ls")
     #    do_ls(args.ls)
     #else:
     #    do_first_load(args.name, args.file)
