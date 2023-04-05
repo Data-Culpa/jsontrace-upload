@@ -4,22 +4,23 @@ JSON Trace Upload lets you upload JSON snapshots to [JSON Trace](https://demo.js
 
 ### Usage:
 
-You can pipe in JSON data to send to [jsontrace.com](https://demo.jsontrace.com/):
-```cat <json> | jtupload.py --name 'label for your use'```
+1. Create a bucket in [JSON Trace](https://demo.jsontrace.com/#buckets) by clicking 'create new bucket' if you don't have one. If you already have an empty bucket or if you have too many buckets, you cannot create a new bucket.
 
-jtupload.py will print out:
+2. Run `jtupload.py` to push data up to JSON Trace. You can run this script from anywhere--virtual machines in the cloud, a remote data center, a Raspberry Pi, whatever.
 
-```Upload succeeded. You can share this diff with the URL https://demo.jsontrace.com/shared/<hash>```
+```cat <json> | jtupload.py --append <bucket_id> --label 'label for your use'```
 
-You can append to the "diff set" by appending a second (or a third, fourth, etc) file to the collection by:
+Or
 
-```cat <json> | jtupload.py --name 'another label' --append <hash>```
+```jtupload.py --append <bucket_id> --file <path/to/file/of/json> --label 'label for your use'```
 
-If you JSON data is in a file, you can tell jtupload.py to upload the file:
+Upon success, `jtupload.py` will print out:
 
-```jtupload.py --file <path/to/file>```
+```View your bucket diff at https://demo.jsontrace.com/#view/<hash>```
 
-If you do not specify a --name, JSON Trace will assign a label for you.
+3. You can append to the "diff set" by appending a second (or a third, fourth, etc) file to the collection by running the above commands again on another JSON source.
+
+If you do not specify a --name, JSON Trace will assign a label for you (current time).
 
 You can upload to the same "diff set" from multiple hosts. For example, you can rapidly compare a JSON file or stream from your laptop to something in EC2 without moving files or copying and pasting. Anyone with the hash can append to the data set, so be careful who you share it with.
 
